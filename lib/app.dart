@@ -22,7 +22,9 @@ class App extends StatelessWidget {
       ],
       child: MaterialApp.router(
         title: 'TestApp',
-        theme: AppTheme.dark,
+        theme: AppTheme.lightTheme,
+        darkTheme: AppTheme.darkTheme,
+        themeMode: ThemeMode.system,
         routerConfig: AppRouter.router,
       ),
     );
