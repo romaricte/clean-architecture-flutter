@@ -3,7 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:testapp/config/router/app_router.dart';
 import 'package:testapp/core/theme/app_theme.dart';
-import 'package:testapp/config/di/dependency_provider.dart';
+import 'package:testapp/config/di/injection_container.dart';
+import 'package:testapp/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:testapp/features/counter/presentation/bloc/counter_bloc.dart';
 
 class App extends StatelessWidget {
@@ -13,16 +14,18 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
+        BlocProvider<AuthBloc>(
+          create: (_) => sl<AuthBloc>(),
+        ),
         BlocProvider<CounterBloc>(
-          create: (_) => CounterBloc(
-            getCounterValueUseCase: DependencyProvider.getCounterValueUseCase,
-            incrementCounterUseCase: DependencyProvider.incrementCounterUseCase,
-          ),
+          create: (_) => sl<CounterBloc>(),
         ),
       ],
       child: MaterialApp.router(
         title: 'TestApp',
-        theme: AppTheme.dark,
+        theme: AppTheme.lightTheme,
+        darkTheme: AppTheme.darkTheme,
+        themeMode: ThemeMode.system,
         routerConfig: AppRouter.router,
       ),
     );
