@@ -4,6 +4,7 @@ import 'package:testapp/core/errors/failures.dart';
 import 'package:testapp/features/auth/domain/entities/user.dart';
 import 'package:testapp/features/auth/domain/usecases/login_usecase.dart';
 import 'package:testapp/features/auth/domain/usecases/get_me_usecase.dart';
+import 'package:testapp/features/auth/domain/usecases/logout_usecase.dart';
 
 part 'auth_event.dart';
 part 'auth_state.dart';
@@ -12,15 +13,19 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   AuthBloc({
     required LoginUseCase loginUseCase,
     required GetMeUseCase getMeUseCase,
+    required LogoutUseCase logoutUseCase,
   }) : _loginUseCase = loginUseCase,
        _getMeUseCase = getMeUseCase,
+       _logoutUseCase = logoutUseCase,
        super(const AuthState.initial()) {
     on<AuthLoginSubmitted>(_onAuthLoginSubmitted);
     on<AuthFetchMeRequested>(_onAuthFetchMeRequested);
+    on<AuthLogoutRequested>(_onAuthLogoutRequested);
   }
 
   final LoginUseCase _loginUseCase;
   final GetMeUseCase _getMeUseCase;
+  final LogoutUseCase _logoutUseCase;
 
   Future<void> _onAuthLoginSubmitted(
     AuthLoginSubmitted event,
@@ -81,5 +86,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         ),
       );
     }
+  }
+
+  Future<void> _onAuthLogoutRequested(
+    AuthLogoutRequested event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(state.copyWith(isLoading: true));
+    await _logoutUseCase();
+    emit(const AuthState.initial());
   }
 }

@@ -12,6 +12,7 @@ import 'package:testapp/features/auth/data/repositories/auth_repository_impl.dar
 import 'package:testapp/features/auth/domain/repositories/auth_repository.dart';
 import 'package:testapp/features/auth/domain/usecases/login_usecase.dart';
 import 'package:testapp/features/auth/domain/usecases/get_me_usecase.dart';
+import 'package:testapp/features/auth/domain/usecases/logout_usecase.dart';
 import 'package:testapp/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:testapp/features/counter/data/datasources/counter_local_data_source.dart';
 import 'package:testapp/features/counter/data/repositories/counter_repository_impl.dart';
@@ -58,8 +59,10 @@ Future<void> initInjectionContainer() async {
     )
     ..registerLazySingleton<LoginUseCase>(() => LoginUseCase(sl()))
     ..registerLazySingleton<GetMeUseCase>(() => GetMeUseCase(sl()))
+    ..registerLazySingleton<LogoutUseCase>(() => LogoutUseCase(sl()))
     ..registerFactory<AuthBloc>(
-      () => AuthBloc(loginUseCase: sl(), getMeUseCase: sl()),
+      () =>
+          AuthBloc(loginUseCase: sl(), getMeUseCase: sl(), logoutUseCase: sl()),
     )
     // Counter
     ..registerLazySingleton<CounterLocalDataSource>(CounterLocalDataSource.new)

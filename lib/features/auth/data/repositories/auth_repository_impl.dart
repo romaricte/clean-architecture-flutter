@@ -68,4 +68,9 @@ class AuthRepositoryImpl implements AuthRepository {
       throw CacheFailure(e.message);
     }
   }
+
+  @override
+  Future<void> logout() async {
+    await _localDataSource.clearToken();
+  }
 }
