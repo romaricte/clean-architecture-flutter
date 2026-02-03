@@ -26,10 +26,11 @@ class _SplashPageState extends State<SplashPage> {
         if (!state.isLoading) {
           if (state.user != null) {
             context.goNamed(RouteNames.home);
-          } else {
-            // Si on n'a pas d'utilisateur après le chargement, on va au login
+          } else if (state.failure == null && state.errorMessage == null) {
+            // Uniquement si on n'a pas d'utilisateur et aucune erreur (fin normale sans auth)
             context.goNamed(RouteNames.login);
           }
+          // Si state.failure != null, on reste sur la SplashPage pour afficher l'erreur
         }
       },
       child: Scaffold(
@@ -40,12 +41,34 @@ class _SplashPageState extends State<SplashPage> {
               const CircularProgressIndicator(),
               const SizedBox(height: 16),
               const Text('Chargement...'),
-              if (context.watch<AuthBloc>().state.failure != null)
+              if (context.watch<AuthBloc>().state.failure != null ||
+                  context.watch<AuthBloc>().state.errorMessage != null)
                 Padding(
                   padding: const EdgeInsets.only(top: 16),
-                  child: Text(
-                    'Erreur: ${context.watch<AuthBloc>().state.failure?.message}',
-                    style: const TextStyle(color: Colors.red),
+                  child: Column(
+                    children: [
+                      Text(
+                        'Erreur: ${context.watch<AuthBloc>().state.failure?.message ?? context.watch<AuthBloc>().state.errorMessage}',
+                        style: const TextStyle(color: Colors.red),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 16),
+                      ElevatedButton(
+                        onPressed: () {
+                          context.read<AuthBloc>().add(
+                            const AuthFetchMeRequested(),
+                          );
+                        },
+                        child: const Text('Réessayer'),
+                      ),
+                      const SizedBox(height: 8),
+                      TextButton(
+                        onPressed: () {
+                          context.goNamed(RouteNames.login);
+                        },
+                        child: const Text('Aller au login'),
+                      ),
+                    ],
                   ),
                 ),
             ],

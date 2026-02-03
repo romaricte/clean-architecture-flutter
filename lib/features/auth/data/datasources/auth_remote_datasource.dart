@@ -37,6 +37,7 @@ class AuthRemoteDataSource {
 
   Future<UserModel> getMe() async {
     try {
+      print('DEBUG: Calling getMe at ${ApiEndpoints.me}');
       final response = await _dio.get<Map<String, dynamic>>(ApiEndpoints.me);
 
       final data = response.data;
@@ -44,12 +45,20 @@ class AuthRemoteDataSource {
         throw const ParseException('Empty response');
       }
 
-      // Supposant que /auth/me renvoie directement l'objet utilisateur
-      // ou un objet {"user": {...}}
-      // Si c'est {"user": {...}}, utilisez data['user']
+      print('DEBUG: getMe response: $data');
+
+      // Si la réponse contient une clé 'user', on extrait le contenu
+      if (data.containsKey('user') && data['user'] is Map<String, dynamic>) {
+        return UserModel.fromJson(data['user'] as Map<String, dynamic>);
+      }
+
       return UserModel.fromJson(data);
     } on DioException catch (e) {
+      print('DEBUG: getMe DioException: ${e.message}');
       throw _handleDioError(e);
+    } catch (e) {
+      print('DEBUG: getMe Exception: $e');
+      rethrow;
     }
   }
 
