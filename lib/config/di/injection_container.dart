@@ -10,17 +10,13 @@ import 'package:testapp/features/auth/data/datasources/auth_local_datasource.dar
 import 'package:testapp/features/auth/data/datasources/auth_remote_datasource.dart';
 import 'package:testapp/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:testapp/features/auth/domain/repositories/auth_repository.dart';
+import 'package:testapp/features/auth/domain/usecases/getReservation.dart';
 import 'package:testapp/features/auth/domain/usecases/login_usecase.dart';
 import 'package:testapp/features/auth/domain/usecases/logout_usecase.dart';
 import 'package:testapp/features/auth/domain/usecases/check_auth_usecase.dart';
 import 'package:testapp/features/auth/domain/usecases/get_me_usecase.dart';
+import 'package:testapp/features/auth/domain/usecases/get_token_usecase.dart';
 import 'package:testapp/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:testapp/features/counter/data/datasources/counter_local_data_source.dart';
-import 'package:testapp/features/counter/data/repositories/counter_repository_impl.dart';
-import 'package:testapp/features/counter/domain/repositories/counter_repository.dart';
-import 'package:testapp/features/counter/domain/usecases/get_counter_value.dart';
-import 'package:testapp/features/counter/domain/usecases/increment_counter.dart';
-import 'package:testapp/features/counter/presentation/bloc/counter_bloc.dart';
 
 final sl = GetIt.instance;
 
@@ -62,29 +58,16 @@ Future<void> initInjectionContainer() async {
     ..registerLazySingleton<LogoutUseCase>(() => LogoutUseCase(sl()))
     ..registerLazySingleton<CheckAuthUseCase>(() => CheckAuthUseCase(sl()))
     ..registerLazySingleton<GetMeUseCase>(() => GetMeUseCase(sl()))
+    ..registerLazySingleton<GetTokenUseCase>(() => GetTokenUseCase(sl()))
+    ..registerLazySingleton<GetReservation>(() => GetReservation(sl()))
     ..registerFactory<AuthBloc>(
       () => AuthBloc(
         loginUseCase: sl(),
         logoutUseCase: sl(),
         checkAuthUseCase: sl(),
         getMeUseCase: sl(),
-      ),
-    )
-    // Counter
-    ..registerLazySingleton<CounterLocalDataSource>(CounterLocalDataSource.new)
-    ..registerLazySingleton<CounterRepository>(
-      () => CounterRepositoryImpl(localDataSource: sl()),
-    )
-    ..registerLazySingleton<GetCounterValueUseCase>(
-      () => GetCounterValueUseCase(sl()),
-    )
-    ..registerLazySingleton<IncrementCounterUseCase>(
-      () => IncrementCounterUseCase(sl()),
-    )
-    ..registerFactory<CounterBloc>(
-      () => CounterBloc(
-        getCounterValueUseCase: sl(),
-        incrementCounterUseCase: sl(),
+        getTokenUseCase: sl(),
+        getReservation: sl(),
       ),
     );
 }

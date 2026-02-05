@@ -37,15 +37,17 @@ class AuthRemoteDataSource {
 
   Future<UserModel> getMe() async {
     try {
-      print('DEBUG: Calling getMe at ${ApiEndpoints.me}');
       final response = await _dio.get<Map<String, dynamic>>(ApiEndpoints.me);
+      print(
+        'AuthRemoteDataSource: getMe response status: ${response.statusCode}',
+      );
+      print('AuthRemoteDataSource: getMe response data: ${response}');
 
       final data = response.data;
       if (data == null) {
+        print('AuthRemoteDataSource: getMe data is null');
         throw const ParseException('Empty response');
       }
-
-      print('DEBUG: getMe response: $data');
 
       // Si la réponse contient une clé 'user', on extrait le contenu
       if (data.containsKey('user') && data['user'] is Map<String, dynamic>) {
@@ -54,13 +56,44 @@ class AuthRemoteDataSource {
 
       return UserModel.fromJson(data);
     } on DioException catch (e) {
-      print('DEBUG: getMe DioException: ${e.message}');
+      print(
+        'AuthRemoteDataSource: DioException in getMe: ${e.message}, status: ${e.response?.statusCode}',
+      );
+      print('AuthRemoteDataSource: Response data: ${e.response?.data}');
       throw _handleDioError(e);
     } catch (e) {
-      print('DEBUG: getMe Exception: $e');
+      print('AuthRemoteDataSource: Generic Exception in getMe: $e');
       rethrow;
     }
   }
+  Future<Map<String, dynamic>> getReservation() async {
+    try {
+      final response = await _dio.get<Map<String, dynamic>>(ApiEndpoints.reservation);
+      print(
+        'AuthRemoteDataSource: getMe response status: ${response.statusCode}',
+      );
+      print('AuthRemoteDataSource: getMe response data: ${response}');
+
+      final data = response.data;
+      if (data == null) {
+        print('AuthRemoteDataSource: getMe data is null');
+        throw const ParseException('Empty response');
+      }
+
+    
+      return data;
+    } on DioException catch (e) {
+      print(
+        'AuthRemoteDataSource: DioException in getMe: ${e.message}, status: ${e.response?.statusCode}',
+      );
+      print('AuthRemoteDataSource: Response data: ${e.response?.data}');
+      throw _handleDioError(e);
+    } catch (e) {
+      print('AuthRemoteDataSource: Generic Exception in getMe: $e');
+      rethrow;
+    }
+  }
+
 
   Exception _handleDioError(DioException e) {
     final statusCode = e.response?.statusCode;

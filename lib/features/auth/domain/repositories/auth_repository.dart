@@ -4,5 +4,7 @@ abstract class AuthRepository {
   Future<User> login({required String email, required String password});
   Future<User> getMe();
   Future<bool> isAuthenticated();
+  Future<String?> getToken();
   Future<void> logout();
+  Future<Map<String, dynamic>> getReservation();
 }

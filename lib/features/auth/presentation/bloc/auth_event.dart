@@ -21,6 +21,14 @@ class AuthFetchMeRequested extends AuthEvent {
   const AuthFetchMeRequested();
 }
 
+class AuthCheckRequested extends AuthEvent {
+  const AuthCheckRequested();
+}
+
 class AuthLogoutRequested extends AuthEvent {
   const AuthLogoutRequested();
+}
+
+class AuthReservationRequested extends AuthEvent {
+  const AuthReservationRequested();
 }

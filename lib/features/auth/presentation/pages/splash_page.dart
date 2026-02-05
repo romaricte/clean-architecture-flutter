@@ -15,8 +15,9 @@ class _SplashPageState extends State<SplashPage> {
   @override
   void initState() {
     super.initState();
-    // On demande à récupérer l'utilisateur connecté dès le démarrage
-    context.read<AuthBloc>().add(const AuthFetchMeRequested());
+    // On demande uniquement à vérifier la présence du token au démarrage
+    context.read<AuthBloc>().add(const AuthCheckRequested());
+
   }
 
   @override
@@ -24,54 +25,50 @@ class _SplashPageState extends State<SplashPage> {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
         if (!state.isLoading) {
-          if (state.user != null) {
-            context.goNamed(RouteNames.home);
+          print('SplashPage: state.isAuthenticated: ${state.isAuthenticated}');
+          print('SplashPage: state.token: ${state.token}');
+          if (state.token != null) {
+            GoRouter.of(context).goNamed(RouteNames.home);
           } else if (state.failure == null && state.errorMessage == null) {
-            // Uniquement si on n'a pas d'utilisateur et aucune erreur (fin normale sans auth)
-            context.goNamed(RouteNames.login);
+            // Uniquement si on n'a pas de token et aucune erreur
+           GoRouter.of(context).goNamed(RouteNames.login);
           }
           // Si state.failure != null, on reste sur la SplashPage pour afficher l'erreur
+        //  context.goNamed(RouteNames.login);
         }
       },
       child: Scaffold(
         body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const CircularProgressIndicator(),
-              const SizedBox(height: 16),
-              const Text('Chargement...'),
-              if (context.watch<AuthBloc>().state.failure != null ||
-                  context.watch<AuthBloc>().state.errorMessage != null)
-                Padding(
-                  padding: const EdgeInsets.only(top: 16),
-                  child: Column(
-                    children: [
-                      Text(
-                        'Erreur: ${context.watch<AuthBloc>().state.failure?.message ?? context.watch<AuthBloc>().state.errorMessage}',
-                        style: const TextStyle(color: Colors.red),
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 16),
-                      ElevatedButton(
-                        onPressed: () {
-                          context.read<AuthBloc>().add(
-                            const AuthFetchMeRequested(),
-                          );
-                        },
-                        child: const Text('Réessayer'),
-                      ),
-                      const SizedBox(height: 8),
-                      TextButton(
-                        onPressed: () {
-                          context.goNamed(RouteNames.login);
-                        },
-                        child: const Text('Aller au login'),
-                      ),
-                    ],
-                  ),
-                ),
-            ],
+          child: BlocBuilder<AuthBloc, AuthState>(
+            builder: (context, state) {
+             return Column(
+    mainAxisAlignment: MainAxisAlignment.center,
+    children: [
+      // 1. On n'affiche le chargement QUE si state.isLoading est vrai
+      if (state.isLoading) ...[
+        const CircularProgressIndicator(),
+        const SizedBox(height: 16),
+        const Text('Chargement..rrrrrrrrrrrrr.'),
+      ],
+      // 2. On affiche l'erreur si elle existe pour comprendre pourquoi ça bloque
+      if (state.errorMessage != null || state.failure != null) ...[
+        const Icon(Icons.error_outline, color: Colors.red, size: 48),
+        const SizedBox(height: 16),
+        Text(
+          'Erreur détectée: ${state.failure?.message ?? state.errorMessage}',
+          style: const TextStyle(color: Colors.red),
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: 16),
+        ElevatedButton(
+          onPressed: () => context.read<AuthBloc>().add(const AuthCheckRequested()),
+          child: const Text('Réessayer'),
+        ),
+      ],
+    ],
+  
+            );
+            },
           ),
         ),
       ),
