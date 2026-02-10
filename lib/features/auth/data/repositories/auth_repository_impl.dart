@@ -90,17 +90,5 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<void> logout() async {
     await _localDataSource.clearToken();
   }
-  @override
-  Future<Map<String, dynamic>> getReservation() async {
-    final connected = await _networkInfo.isConnected;
-    if (!connected) {
-      throw const NoInternetFailure('No internet connection');
-    }
-    try {
-      final reservation = await _remoteDataSource.getReservation();
-      return reservation;
-    } catch (e) {
-      throw ServerFailure(e.toString());
-    }
-  }
+ 
 }

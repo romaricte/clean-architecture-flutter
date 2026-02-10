@@ -2,7 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:testapp/core/errors/failures.dart';
 import 'package:testapp/features/auth/domain/entities/user.dart';
-import 'package:testapp/features/auth/domain/usecases/getReservation.dart';
+import 'package:testapp/features/home/domain/usecases/getReservation.dart';
 import 'package:testapp/features/auth/domain/usecases/login_usecase.dart';
 import 'package:testapp/features/auth/domain/usecases/logout_usecase.dart';
 import 'package:testapp/features/auth/domain/usecases/check_auth_usecase.dart';
